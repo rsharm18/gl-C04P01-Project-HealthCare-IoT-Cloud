@@ -1,0 +1,10 @@
+[
+  {
+  "device_id": "BSM_G101",
+  "endpoint": "a3e93amy7e9voa-ats.iot.us-east-1.amazonaws.com"
+},
+  {
+  "device_id": "BSM_G102",
+  "endpoint": "a3e93amy7e9voa-ats.iot.us-east-1.amazonaws.com"
+}
+]
