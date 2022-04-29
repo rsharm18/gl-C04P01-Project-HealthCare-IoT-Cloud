@@ -41,9 +41,9 @@ def customCallback(client, userdata, message):
     print("--------------\n\n")
 
 
-def publishBedSideMonitorData(loopCount):
+def publishBedSideMonitorData(loopCount,clientId):
     message = {}
-    message['deviceid'] = 'BSM_G101'
+    message['deviceid'] = clientId #'BSM_G101'
     try:
         if loopCount % PublishFreqTemperature == 0:
             value = float(random.normalvariate(99, 1.5))
@@ -171,7 +171,7 @@ now = time.time()
 while True:
     try :
         if args.mode == 'both' or args.mode == 'publish':
-            scheduler.enterabs(now+loopCount, 1, publishBedSideMonitorData, (loopCount,))
+            scheduler.enterabs(now+loopCount, 1, publishBedSideMonitorData, (loopCount,clientId))
             loopCount += 1
             scheduler.run()
     except KeyboardInterrupt:
