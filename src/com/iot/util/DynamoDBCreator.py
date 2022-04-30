@@ -8,6 +8,15 @@ def create_table(table_name='bsm_data'):
     :param table_name:
     :return: The newly created table.
     """
+
+    client = boto3.client('dynamodb')
+    response = client.list_tables()
+
+    for existing_table_name in response['TableNames']:
+        if existing_table_name == table_name:
+            print("skip deleting the table")
+            return
+
     dyn_resource = boto3.resource('dynamodb')
 
     params = {
