@@ -21,6 +21,10 @@ class Database:
         self._dynamodb = boto3.resource('dynamodb')
         self._table = self._dynamodb.Table(table_name)
 
+
+    def insert_data(self, data):
+        self._table.put_item(Item=data)
+
     def get_device_raw_data(self, from_date, to_date):
         # f = open("../../../raw_data.json", "r")
         # data = json.load(f)
@@ -51,12 +55,13 @@ class Database:
         items = response["Items"]
         # print("items before sort", items)
 
-        items.sort(key=lambda x: parser.parse(x["timestamp"]))
-        # print("items after sort", items)
-        # print("\n\n")
-        return self.apply_date_range(response["Items"], from_date, to_date)
+        # items.sort(key=lambda x: parser.parse(x["timestamp"]))
+        # # print("items after sort", items)
+        # # print("\n\n")
+        # return self.apply_date_range(response["Items"], from_date, to_date)
         #
-        # return response["Items"]
+        return response["Items"]
+
 
     def apply_date_range(self, items, from_date, to_date):
         filteredList: list = []
