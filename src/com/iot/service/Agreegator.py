@@ -5,7 +5,7 @@ from dateutil import parser
 
 from src.com.iot.model.AggregatedDataModel import Aggregated_Data_Model
 from src.com.iot.service.IProcessor import IProcessor
-from src.com.iot.util.Database import Database
+from src.com.iot.util.Database import Database, marshall_data, get_registered_devices
 
 
 class Aggregator(IProcessor):
@@ -14,26 +14,25 @@ class Aggregator(IProcessor):
         self._from_date = from_date
         self._to_date = to_date
         self._database = Database("bsm_agg_data")
-        self.existing_device_ids = ["BSM_01", "BSM_02"]
+        self.existing_device_ids = get_registered_devices()
 
     @property
     def databse(self):
         return self._database
 
     def process(self):
-        print("I am ready to process the data")
         # read raw data
         raw_data_set: List = self.databse.get_device_raw_data(self._from_date, self._to_date)
 
         # filter data by device id
         for device_id in self.existing_device_ids:
+            print("Aggregating data for device {0}".format(device_id))
             self.aggregate_device_data_for_device(device_id, raw_data_set)
         # agreegate data for each device
         # grouped_data = self.aggregate_data_by_sensor(raw_data_set)
         # print("raw data is {0}".format(grouped_data))
 
     def aggregate_device_data_for_device(self, deviceid, items: List):
-        print("\nBegin aggregating data for :: ", deviceid)
         device_data = list(filter(
             lambda item: item["deviceid"] == deviceid and self.is_date_in_range(item["timestamp"], self._from_date,
                                                                                 self._to_date), items))
@@ -75,14 +74,14 @@ class Aggregator(IProcessor):
                                                  self.format_decimal_digits(minm), self.format_decimal_digits(maxm),
                                                  start_time, end_time)
 
-                    self._database.insert_data(agdm.marshall_data())
-                    aggregated_data.append(agdm.marshall_data())
+                    self._database.insert_data(marshall_data(agdm))
+                    aggregated_data.append(marshall_data(agdm))
                     # print(" sensor_type :: ", sensor_type, "len device_data ", len(filtered_data_set), " len aggregated data ", len(aggregated_data))
 
             start_time = end_time
 
-        print("Data Count for all sensors ", len(device_data), " aggregated data size ", len(aggregated_data))
-        print("End aggregating data for :: ", deviceid)
+        # print("Data Count for all sensors ", len(device_data), " aggregated data size ", len(aggregated_data))
+        # print("End aggregating data for :: ", deviceid)
         # print("deviceId ", deviceid)
         # print("device_data ", device_data)
         # print("aggregated data ", aggregated_data)

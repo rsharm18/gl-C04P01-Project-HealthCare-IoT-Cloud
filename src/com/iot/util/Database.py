@@ -5,6 +5,17 @@ from dateutil import parser
 from src.com.iot.util import DynamoDBCreator
 
 
+def get_registered_devices():
+    return ["BSM_01", "BSM_02","BSM_03"]
+
+def marshall_data(obj):
+    data = {}
+    for variable, value in vars(obj).items():
+        data[variable] = value
+
+    # print("data ",data)
+    return data
+
 def create_dynamodb_table(tableName):
     DynamoDBCreator.create_table(tableName)
 
@@ -62,6 +73,12 @@ class Database:
         #
         return response["Items"]
 
+    def get_data_from_table(self,table_name):
+        bsm_data_table = boto3.resource('dynamodb')
+        # attr = bsm_data_table.conditions.Attr('timeStamp')
+        response = bsm_data_table.Table(table_name).scan()
+
+        return response["Items"]
 
     def apply_date_range(self, items, from_date, to_date):
         filteredList: list = []

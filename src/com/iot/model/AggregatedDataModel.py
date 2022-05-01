@@ -1,5 +1,6 @@
 import datetime
 import uuid
+from decimal import Decimal
 
 
 class Aggregated_Data_Model:
@@ -15,9 +16,9 @@ class Aggregated_Data_Model:
 
     def __init__(self, deviceid, device_type, avg, minm, maxm, start_time, end_time):
         self.device_type = device_type
-        self.average = avg
-        self.minimum = minm
-        self.maximum = maxm
+        self.average = Decimal(avg)
+        self.minimum = Decimal(minm)
+        self.maximum = Decimal(maxm)
         self.start_time = str(start_time)
         self.end_time = str(end_time)
         self.deviceid = deviceid
@@ -36,10 +37,10 @@ class Aggregated_Data_Model:
                "end_time = {7} ) \n".format(self.deviceid, self.deviceid, self.device_type, self.average, self.minimum,
                                             self.maximum, self.start_time, self.end_time)
 
-    def marshall_data(self):
-        data = {}
-        for variable, value in vars(self).items():
-            data[variable] = value
-
-        # print("data ",data)
-        return data
+    # def marshall_data(self):
+    #     data = {}
+    #     for variable, value in vars(self).items():
+    #         data[variable] = value
+    #
+    #     # print("data ",data)
+    #     return data
