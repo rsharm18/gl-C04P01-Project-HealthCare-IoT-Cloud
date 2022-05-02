@@ -14,8 +14,8 @@ Database.create_dynamodb_table("bsm_alerts")
 
 
 def aggregator_handler():
-    from_date = parser.parse("2022-05-01 15:47:00")
-    to_date = parser.parse("2022-05-01 17:47:00")
+    from_date = parser.parse("2022-05-02 10:23:00")
+    to_date = parser.parse("2022-05-02 11:35:00")
     aggregator: IProcessor = Aggregator(from_date, to_date)
     aggregator.process()
 

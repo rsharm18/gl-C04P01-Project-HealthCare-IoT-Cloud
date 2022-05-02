@@ -26,21 +26,21 @@ class Aggregator(IProcessor):
         self.existing_device_ids = get_registered_devices()
 
     @property
-    def databse(self):
+    def database(self):
         return self._database
 
     def process(self):
         # read raw data
-        # raw_data_set: List = self.databse.get_data_from_table("bsm_data")
+        # raw_data_set: List = self.database.get_data_from_table("bsm_data")
 
         # aggregate data by device id
         for device_id in self.existing_device_ids:
-            raw_data_set: List = self.databse.get_data_from_table("bsm_data", device_id)
+            raw_data_set: List = self.database.get_data_from_table("bsm_data", device_id)
             print("Aggregating data for device {0}".format(device_id))
             self.aggregate_device_data_for_device(device_id, raw_data_set)
 
     def aggregate_device_data_for_device(self, deviceid, items: List):
-        # filter the data by device id and timerange
+        # filter the data by  timerange
         device_data = list(
             filter(lambda item: is_date_in_range(item["timestamp"], self._from_date, self._to_date), items))
 

@@ -25,18 +25,18 @@ class Anomaly_Detector(IProcessor):
             # read data from aggregate table
             aggregated_data: [] = self._database.get_data_from_table("bsm_agg_data",device_id)
             print("Processing rules for device {0}".format(device_id))
-            self.detect_anomaly(aggregated_data, self.anomaly_rule, device_id)
+            self.detect_anomaly(aggregated_data, self.anomaly_rule)
 
-    def detect_anomaly(self, aggregated_data, anomaly_rule_list, deviceid):
+    def detect_anomaly(self, aggregated_data, anomaly_rule_list):
         if len(aggregated_data) > 0 and len(anomaly_rule_list) > 0:
             # filter data for the given device id
-            data = list(filter(lambda item: item["deviceid"] == deviceid, aggregated_data))
+            # data = list(filter(lambda item: item["deviceid"] == deviceid, aggregated_data))
             # sort the data by timestamp
-            data.sort(key=lambda x: parser.parse(x["timestamp"]))
+            aggregated_data.sort(key=lambda x: parser.parse(x["timestamp"]))
 
             for anomaly_rule in anomaly_rule_list:
                 # filter data by the sensor/datatype type
-                sensor_data = list(filter(lambda item: item["device_type"] == anomaly_rule.device_type, data))
+                sensor_data = list(filter(lambda item: item["device_type"] == anomaly_rule.device_type, aggregated_data))
                 self.apply_and_validate_anomaly(anomaly_rule, sensor_data)
 
             # print("Aggregated data ", aggregated_data)  # print("Rules ", self.anomaly_rule)

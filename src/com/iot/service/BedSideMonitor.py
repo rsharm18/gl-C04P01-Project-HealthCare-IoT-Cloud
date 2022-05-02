@@ -17,20 +17,22 @@
  */
  '''
 
-from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
-from AWSIoTPythonSDK.exception.AWSIoTExceptions import publishTimeoutException
-from AWSIoTPythonSDK.core.protocol.internal.defaults import DEFAULT_OPERATION_TIMEOUT_SEC
-import logging
-import datetime
 import argparse
+import datetime
 import json
+import logging
 import random
-import csv
-import time
 import sched
+import time
 
+from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
+from AWSIoTPythonSDK.core.protocol.internal.defaults import DEFAULT_OPERATION_TIMEOUT_SEC
+from AWSIoTPythonSDK.exception.AWSIoTExceptions import publishTimeoutException
+
+from src.com.iot.model.RawDataModel import Raw_Data_Model
 
 AllowedActions = ['both', 'publish', 'subscribe']
+
 
 # Custom MQTT message callback
 def customCallback(client, userdata, message):
@@ -41,45 +43,48 @@ def customCallback(client, userdata, message):
     print("--------------\n\n")
 
 
-def publishBedSideMonitorData(loopCount,clientId):
+def publishBedSideMonitorData(loopCount, clientId):
     message = {}
-    message['deviceid'] = clientId #'BSM_G101'
+    message['deviceid'] = clientId  # 'BSM_G101'
+
+    datatype = ''
+    value = 0
     try:
         if loopCount % PublishFreqTemperature == 0:
             value = float(random.normalvariate(99, 1.5))
             value = round(value, 1)
-            timestamp = str(datetime.datetime.now())
-            message['timestamp'] = timestamp
-            message['datatype'] = 'Temperature'
-            message['value'] = value
-            messageJson = json.dumps(message)
-            myAWSIoTMQTTClient.publish(topic, messageJson, 1)
+            datatype = 'Temperature'
+            raw_data = Raw_Data_Model(clientId, datatype, value)
+            # message_json = json.dumps(raw_data)
+            myAWSIoTMQTTClient.publish(topic, raw_data.toJSON(), 1)
+            if args.mode == 'publish':
+                print('Published topic %s: %s\n' % (topic, raw_data.toJSON()))
 
         if loopCount % PublishFreqOxygen == 0:
-            value = int(random.normalvariate(90,3.0))
-            timestamp = str(datetime.datetime.now())
-            message['timestamp'] = timestamp
-            message['datatype'] = 'SPO2'
-            message['value'] = value
-            messageJson = json.dumps(message)
-            myAWSIoTMQTTClient.publish(topic, messageJson, 1)
+            value = int(random.normalvariate(90, 3.0))
+            datatype = 'SPO2'
+            raw_data = Raw_Data_Model(clientId, datatype, value)
+            # message_json = json.dumps(raw_data)
+            myAWSIoTMQTTClient.publish(topic, raw_data.toJSON(), 1)
+            if args.mode == 'publish':
+                print('Published topic %s: %s\n' % (topic, raw_data.toJSON()))
 
         if loopCount % PublishFreqHeartRate == 0:
-            value = int(random.normalvariate(85,12))
-            timestamp = str(datetime.datetime.now())
-            message['timestamp'] = timestamp
-            message['datatype'] = 'HeartRate'
-            message['value'] = value
-            messageJson = json.dumps(message)
-            myAWSIoTMQTTClient.publish(topic, messageJson, 1)
+            value = int(random.normalvariate(85, 12))
+            datatype = 'HeartRate'
+            raw_data = Raw_Data_Model(clientId, datatype, value)
+            # message_json = json.dumps(raw_data)
+            myAWSIoTMQTTClient.publish(topic, raw_data.toJSON(), 1)
+            if args.mode == 'publish':
+                print('Published topic %s: %s\n' % (topic, raw_data.toJSON()))
 
-        if args.mode == 'publish':
-            print('Published topic %s: %s\n' % (topic, messageJson))
+
 
     except publishTimeoutException:
-        print("Unstable connection detected. Wait for {} seconds. No data is pushed on IoT core from {} to {}.".format(DEFAULT_OPERATION_TIMEOUT_SEC, (datetime.datetime.now() - datetime.timedelta(seconds=DEFAULT_OPERATION_TIMEOUT_SEC)), datetime.datetime.now()))
-
-
+        print("Unstable connection detected. Wait for {} seconds. No data is pushed on IoT core from {} to {}.".format(
+            DEFAULT_OPERATION_TIMEOUT_SEC,
+            (datetime.datetime.now() - datetime.timedelta(seconds=DEFAULT_OPERATION_TIMEOUT_SEC)),
+            datetime.datetime.now()))
 
 
 # Read in command-line parameters
@@ -95,7 +100,7 @@ parser.add_argument("-id", "--clientId", action="store", dest="clientId", defaul
                     help="Targeted client id")
 parser.add_argument("-t", "--topic", action="store", dest="topic", default="sdk/test/Python", help="Targeted topic")
 parser.add_argument("-m", "--mode", action="store", dest="mode", default="both",
-                    help="Operation modes: %s"%str(AllowedActions))
+                    help="Operation modes: %s" % str(AllowedActions))
 parser.add_argument("-M", "--message", action="store", dest="message", default="Hello World!",
                     help="Message to publish")
 
@@ -169,9 +174,9 @@ scheduler = sched.scheduler(time.time, time.sleep)
 
 now = time.time()
 while True:
-    try :
+    try:
         if args.mode == 'both' or args.mode == 'publish':
-            scheduler.enterabs(now+loopCount, 1, publishBedSideMonitorData, (loopCount,clientId))
+            scheduler.enterabs(now + loopCount, 1, publishBedSideMonitorData, (loopCount, clientId))
             loopCount += 1
             scheduler.run()
     except KeyboardInterrupt:

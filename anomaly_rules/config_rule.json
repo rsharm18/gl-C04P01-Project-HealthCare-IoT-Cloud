@@ -3,7 +3,7 @@
     "id": "R_101",
     "rule_type": "min",
     "device_type": "HeartRate",
-    "avg_min": 55,
+    "avg_min": 89,
     "trigger_count": 5
   },
   {
