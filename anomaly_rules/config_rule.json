@@ -1,0 +1,38 @@
+[
+  {
+    "id": "R_101",
+    "rule_type": "min",
+    "device_type": "HeartRate",
+    "avg_min": 55,
+    "trigger_count": 5
+  },
+  {
+    "id": "R_102",
+    "rule_type": "max",
+    "device_type": "HeartRate",
+    "avg_max": 85,
+    "trigger_count": 5
+  },
+  {
+    "id": "R_103",
+    "rule_type": "min_max",
+    "device_type": "HeartRate",
+    "avg_max": 86,
+    "avg_min": 55,
+    "trigger_count": 5
+  },
+    {
+    "id": "R_104",
+    "rule_type": "min",
+    "device_type": "SPO2",
+    "avg_min": 95.5,
+    "trigger_count": 5
+  },
+   {
+    "id": "R_105",
+    "rule_type": "min",
+    "device_type": "Temperature",
+    "avg_min": 98.5,
+    "trigger_count": 5
+  }
+]

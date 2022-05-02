@@ -14,26 +14,16 @@ def create_table(table_name='bsm_data'):
 
     for existing_table_name in response['TableNames']:
         if existing_table_name == table_name:
-            print("skip deleting the table")
+            print("skip creating the table : ", table_name)
             return
 
     dyn_resource = boto3.resource('dynamodb')
 
-    params = {
-        'TableName': table_name,
-        'KeySchema': [
-            {'AttributeName': 'deviceid', 'KeyType': 'HASH'},
-            {'AttributeName': 'timestamp', 'KeyType': 'RANGE'}
-        ],
-        'AttributeDefinitions': [
-            {'AttributeName': 'deviceid', 'AttributeType': 'S'},
-            {'AttributeName': 'timestamp', 'AttributeType': 'S'}
-        ],
-        'ProvisionedThroughput': {
-            'ReadCapacityUnits': 10,
-            'WriteCapacityUnits': 10
-        }
-    }
+    params = {'TableName': table_name, 'KeySchema': [{'AttributeName': 'deviceid', 'KeyType': 'HASH'},
+        {'AttributeName': 'timestamp', 'KeyType': 'RANGE'}],
+        'AttributeDefinitions': [{'AttributeName': 'deviceid', 'AttributeType': 'S'},
+            {'AttributeName': 'timestamp', 'AttributeType': 'S'}],
+        'ProvisionedThroughput': {'ReadCapacityUnits': 10, 'WriteCapacityUnits': 10}}
     table = dyn_resource.create_table(**params)
     print(f"Creating {table_name}...")
     table.wait_until_exists()
