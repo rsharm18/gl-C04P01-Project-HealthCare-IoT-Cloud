@@ -9,7 +9,7 @@ from src.com.iot.model.ConfigRuleDataModel import Config_Rule_Data_Model
 class Anomaly_Data_Model:
     def __init__(self, deviceid, start_time, end_time, average, rule: Config_Rule_Data_Model):
         self.deviceid = deviceid
-        self.type = rule.sensor_type
+        self.datatype = rule.device_type
         self.start_time = start_time
         self.end_time = end_time
         self.average_value = Decimal(average)
