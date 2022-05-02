@@ -19,6 +19,7 @@ def aggregator_handler():
     aggregator: IProcessor = Aggregator(from_date, to_date)
     aggregator.process()
 
+
 def anomaly_detector_handler():
     f = open("../../../anomaly_rules/config_rule.json", "r")
     config_rule = json.load(f)
@@ -34,15 +35,15 @@ def anomaly_detector_handler():
     anomaly_detector.process()
 
 
-
 # print("config_rules ", anomaly_data_rules)
-interactive = True
+interactive = False
 
 if not interactive:
     aggregator_handler()
     anomaly_detector_handler()
 while interactive:
-    choice = int(input("Enter \n 1 to run both aggregator and ANomally Detector\n\t 2 to run only Aggregator \n\t 3 to run only the Anomaly Detector \n\t 0 to quit"))
+    choice = int(input(
+        "Enter \n 1 to run both aggregator and ANomally Detector\n\t 2 to run only Aggregator \n\t 3 to run only the Anomaly Detector \n\t 0 to quit"))
     if choice == 0:
         break
     elif choice == 1:
@@ -52,8 +53,3 @@ while interactive:
         aggregator_handler()
     elif choice == 3:
         anomaly_detector_handler()
-
-
-
-
-
